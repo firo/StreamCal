@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<link href='/style/fullcalendar.css' rel='stylesheet' />
+<script src='/js/moment.min.js'></script>
+<script src='/js/jquery.min.js'></script>
+<script src='/js/jquery-ui.custom.min.js'></script>
+<script src='/js/fullcalendar.min.js'></script>
+<script src='/js/fullcalendar-rightclick.js'></script>
+<script src='/js/jscolor/jscolor.js'></script>
+<script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+<script>
+
+	var socket = io();
+	var room_id;
+
+	$(document).ready(function() {
+
+		// var room_id = document.URL.split('/')[3];		
+		socket.on('room_request', function(id){
+			//$('#room h1').append($('<i>').text(room_id));
+			$('#room h1').replaceWith('<h1>Match Calendar '+ id + '</h1>');
+			room_id = id;
+		});
+
+		// listen new event and render in calendar
+		socket.on('add_event', function(e){
+			//$('#log').append($('<i>').text(e.title));
+			if(!containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
+				$('#calendar').fullCalendar( 'renderEvent', {id:e._id , title: e.title, start: e.start, backgroundColor: e.backgroundColor}, true);
+			}
+		});
+
+		// listen new event to remove from calendar
+		socket.on('remove_event', function(e){
+			$('#log').append($('<i>').text(e.title));
+			if(containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
+				$('#calendar').fullCalendar( 'removeEvents', e._id );
+			}
+		});
+
+
+		/* initialize the external events
+		-----------------------------------------------------------------*/
+
+		$('#external-events .fc-event').each(function() {
+
+			// store data so the calendar knows to render an event upon drop
+			$(this).data('event', {
+				title: $.trim($(this).text()), // use the element's text as the event title
+				stick: true // maintain when user navigates (see docs on the renderEvent method)
+			});
+
+			// make the event draggable using jQuery UI
+			$(this).draggable({
+				zIndex: 999,
+				revert: true,      // will cause the event to go back to its
+				revertDuration: 0  //  original position after the drag
+			});
+
+		});
+
+
+		/* initialize the calendar
+		-----------------------------------------------------------------*/
+		var dropbgcolor;
+
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'agendaWeek,agendaDay'
+			},
+			editable: true,
+			defaultView: 'agendaWeek',
+			businessHours:  {
+	            start: '08:00',
+	            end:   '20:00',
+	            dow: [ 1, 2, 3, 4, 5]
+    		},
+			droppable: true, // this allows things to be dropped onto the calendar
+			drop: function(date, jsEvent, ui) {
+				// update event array to server side
+				dropbgcolor = jsEvent.target.style.backgroundColor;
+				// is the "remove after drop" checkbox checked?
+				if ($('#drop-remove').is(':checked')) {
+					// if so, remove the element from the "Draggable Events" list
+					$(this).remove();
+				}
+			},
+			eventClick: function(calEvent, jsEvent, view) {
+
+		    },
+		    eventDrop: function(event, delta, revertFunc) {
+			    /*alert(event.title + " was dropped on " + event.start.format());
+			    if (!confirm("Are you sure about this change?")) {
+			        revertFunc();
+			    }*/
+			    event.color = dropbgcolor;
+				$('#calendar').fullCalendar('rerenderEvents');
+				// create new obj the event to backend
+				var e = new Object();
+				e.room_id = room_id;
+				e._id = event._id;
+				e.start = event.start;
+				e.end = event.end;
+				e.title = event.title;
+				e.allday = event.allDay;
+				e.url = event.url;
+				e.backgroundColor = event.color;
+				e.borderColor = event.borderColor;
+				e.textColor = event.textColor;
+				socket.emit('move_event',e);
+
+    		},
+    		eventReceive: function (event) {
+
+    			event.color = dropbgcolor;
+				$('#calendar').fullCalendar('rerenderEvents');
+				// create new obj the event to backend
+				var e = new Object();
+				e.room_id = room_id;
+				e._id = event._id;
+				e.start = event.start;
+				e.end = event.end;
+				e.title = event.title;
+				e.allday = event.allDay;
+				e.url = event.url;
+				e.backgroundColor = event.color;
+				e.borderColor = event.borderColor;
+				e.textColor = event.textColor;
+				socket.emit('add_event',e);
+
+			},
+			dayRightclick: function(date, jsEvent, view) {
+		        alert('a day has been rightclicked!');
+		        // Prevent browser context menu:
+		        return false;
+		    },
+		    eventRightclick: function(event, jsEvent, view) {
+		    	alert('an event has been rightclicked!');
+		        // Prevent browser context menu:
+		        return false;
+		    }
+
+		});
+
+	    jQuery('.add').click(function () {
+
+	        //$("#create").submit();
+	        //alert('alert');
+	        var color = "#"+$("#eventcolor").val();
+	        $( "<div class='fc-event ui-draggable ui-draggable-handle'>" + $("#eventname").val() + "</div>" )
+	        .appendTo( $( ".events" ) )
+	        .css( 'background-color', color )
+	        .css( 'border-color', "#FFFFFF");
+	        
+	        $('#external-events .fc-event').each(function() {
+			// store data so the calendar knows to render an event upon drop
+			$(this).data('event', {
+				title: $.trim($(this).text()), // use the element's text as the event title
+				stick: true // maintain when user navigates (see docs on the renderEvent method)
+			});
+
+			// make the event draggable using jQuery UI
+			$(this).draggable({
+				zIndex: 999,
+				revert: true,      // will cause the event to go back to its
+				revertDuration: 0  //  original position after the drag
+			});
+
+		});
+
+	    });
+		
+
+	});
+
+	/* utilities functions
+	-----------------------------------------------------------------*/	
+	function containsEvent(obj, list) {
+	    var i;
+	    for (i = 0; i < list.length; i++) {
+	        if (list[i]._id === obj._id) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	function createAndSend(e, a) {
+
+		event.color = dropbgcolor;
+		$('#calendar').fullCalendar('rerenderEvents');
+		// create new obj the event to backend
+		var e = new Object();
+		e.room_id = room_id;
+		e._id = event._id;
+		e.start = event.start;
+		e.end = event.end;
+		e.title = event.title;
+		e.allday = event.allDay;
+		e.url = event.url;
+		e.backgroundColor = event.color;
+		e.borderColor = event.borderColor;
+		e.textColor = event.textColor;
+		socket.emit(a,e);
+
+	}
+
+</script>
+<style>
+
+	body {
+		margin-top: 40px;
+		text-align: center;
+		font-size: 14px;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+	}
+		
+	#wrap {
+		width: 1100px;
+		margin: 0 auto;
+	}
+		
+	#external-events {
+		float: left;
+		width: 150px;
+		padding: 0 10px;
+		border: 1px solid #ccc;
+		background: #eee;
+		text-align: left;
+	}
+		
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+	}
+		
+	#external-events .fc-event {
+		margin: 10px 0;
+		cursor: pointer;
+	}
+		
+	#external-events p {
+		margin: 1.5em 0;
+		font-size: 11px;
+		color: #666;
+	}
+		
+	#external-events p input {
+		margin: 0;
+		vertical-align: middle;
+	}
+
+	#calendar {
+		float: right;
+		width: 900px;
+	}
+</style>
+</head>
+<body>
+	<div id='room'><h1>Match Calendar </h1></div>
+	<div id='wrap'>
+
+		<div id='external-events'>
+			<h4>Draggable Events</h4>
+
+			<form id='create' method='get'>
+				<input id='eventname' name='eventname' type='text'>
+				<input id='eventcolor' name ='eventcolor' class='color' value='087BFF'>
+				<input class='add' type='button' value='add' />
+			</form>
+
+			<div class='events'>
+				<!--<div class='fc-event'>School</div>-->
+			</div>
+			
+			<p>
+				<input type='checkbox' id='drop-remove' />
+				<label for='drop-remove'>remove after drop</label>
+			</p>
+		</div>
+
+		<div id='calendar'></div>
+		<div style='clear:both'></div>
+	</div>
+	<div id='log'></div>
+
+</body>
+</html>

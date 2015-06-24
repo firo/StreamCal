@@ -55,7 +55,7 @@ io.on('connection', function(socket){
 
     socket.on('disconnect', function() {
         socket.leave(room_id);
-        console.log("client disconnected")
+        console.log('client ' + socket.id + ' disconnected from room '+ room_id);
     });
 });
 

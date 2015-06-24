@@ -1,6 +1,7 @@
 {
   "name": "streamcally",
   "version": "0.0.1",
+  "main": "app.js",
   "description": "Streaming Calendar",
   "dependencies": {
     "express": "^4.11.0",

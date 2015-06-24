@@ -28,7 +28,7 @@
 		socket.on('add_event', function(e){
 			//$('#log').append($('<i>').text(e.title));
 			if(!containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
-				$('#calendar').fullCalendar( 'renderEvent', {id:e._id , title: e.title, start: e.start, backgroundColor: e.backgroundColor}, true);
+				$('#calendar').fullCalendar( 'renderEvent', {id:e._id , title: e.title, start: e.start, backgroundColor: e.backgroundColor, borderColor: e.borderColor}, true);
 			}
 		});
 

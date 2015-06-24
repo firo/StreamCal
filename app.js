@@ -60,6 +60,7 @@ io.on('connection', function(socket){
 
 
 // Express 
-http.listen(80, function(){
-  console.log('listening on *:80');
+var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000  
+http.listen(port, function(){
+  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });

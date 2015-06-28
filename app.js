@@ -30,6 +30,8 @@ io.on('connection', function(socket){
 		room_id = shortid.generate();
 	}
 	
+	console.log('-> '+ Object.keys(socket.adapter.rooms[room_id]));
+
 	// response room id
 	socket.emit('room_request', room_id);
 	socket.join(room_id);
@@ -38,23 +40,23 @@ io.on('connection', function(socket){
     socket.emit('updaterooms', rooms, room_id);
 
 	socket.on('add_event', function(e) {
-		console.log("dropped event " + e._id + " on room " + room_id + " with background "+e.backgroundColor);
+		console.log("dropped event " + e._id + " on room " + room_id + " with background "+e.backgroundColor + " with bordercolor "+e.border);
 		io.sockets.in(room_id).emit('add_event', e);
 	});
 
 	socket.on('remove_event', function(e) {
-		console.log("remove event " + e._id + " on room " + room_id + " with background "+e.backgroundColor);
+		console.log("remove event " + e._id + " on room " + room_id + " with background "+e.backgroundColor + " with bordercolor "+e.border);
 		io.sockets.in(room_id).emit('remove_event', e);
 	});
 
 	socket.on('move_event', function(e) {
-		console.log("move event " + e._id + " on room " + room_id + " with background "+e.backgroundColor);
+		console.log("move event " + e._id + " on room " + room_id + " with background "+e.backgroundColor + " with bordercolor "+e.border);
 		io.sockets.in(room_id).emit('remove_event', e);
 		io.sockets.in(room_id).emit('add_event', e);
 	});
 
     socket.on('disconnect', function() {
-        socket.leave(room_id);
+        // socket.leave(room_id); Rooms are left automatically upon disconnection.
         console.log('client ' + socket.id + ' disconnected from room '+ room_id);
     });
 });

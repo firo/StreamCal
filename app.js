@@ -23,14 +23,12 @@ app.get('/:room', function(req, res){
 
 // Socket.io
 io.on('connection', function(socket){
-	
+
 	var room_id = (socket.request.headers.referer).split('/')[3];
 	if (room_id == '') {
 		shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 		room_id = shortid.generate();
 	}
-	
-	console.log('-> '+ Object.keys(socket.adapter.rooms[room_id]));
 
 	// response room id
 	socket.emit('room_request', room_id);
@@ -62,8 +60,8 @@ io.on('connection', function(socket){
 });
 
 
-// Express 
-var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000  
+// Express
+var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000
 http.listen(port, function(){
   console.log("Express server listening on port %d in %s mode", port, app.settings.env);
 });

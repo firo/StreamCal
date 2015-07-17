@@ -30,7 +30,7 @@ io.on('connection', function(socket){
 		room_id = shortid.generate();
 	}
 
-	// response room id
+	// Response room id
 	socket.emit('room_request', room_id);
 	socket.join(room_id);
 	console.log('client ' + socket.id + ' connected in room '+ room_id);

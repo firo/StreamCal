@@ -20,7 +20,7 @@
 		// var room_id = document.URL.split('/')[3];		
 		socket.on('room_request', function(id){
 			//$('#room h1').append($('<i>').text(room_id));
-			$('#room h1').replaceWith('<h1>Match Calendar '+ id + '</h1>');
+			$('#room h1').replaceWith('<h1>Match Calendar <a href="/'+ id + '">'+id+'</h1>');
 			room_id = id;
 		});
 
@@ -28,7 +28,7 @@
 		socket.on('add_event', function(e){
 			//$('#log').append($('<i>').text(e.title));
 			if(!containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
-				$('#calendar').fullCalendar( 'renderEvent', {id:e._id , title: e.title, start: e.start, backgroundColor: e.backgroundColor, borderColor: e.borderColor}, true);
+				$('#calendar').fullCalendar( 'renderEvent', {id:e._id , title: e.title, start: e.start, backgroundColor: e.backgroundColor, borderColor: e.border}, true);
 			}
 		});
 
@@ -65,12 +65,13 @@
 		/* initialize the calendar
 		-----------------------------------------------------------------*/
 		var dropbgcolor;
+		var dropbordercolor;
 
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'agendaWeek,agendaDay'
+				right: 'month,agendaWeek,agendaDay'
 			},
 			editable: true,
 			defaultView: 'agendaWeek',
@@ -83,6 +84,7 @@
 			drop: function(date, jsEvent, ui) {
 				// update event array to server side
 				dropbgcolor = jsEvent.target.style.backgroundColor;
+				dropbordercolor = jsEvent.target.style.border;
 				// is the "remove after drop" checkbox checked?
 				if ($('#drop-remove').is(':checked')) {
 					// if so, remove the element from the "Draggable Events" list
@@ -98,6 +100,7 @@
 			        revertFunc();
 			    }*/
 			    event.color = dropbgcolor;
+			    event.border = dropbordercolor;
 				$('#calendar').fullCalendar('rerenderEvents');
 				// create new obj the event to backend
 				var e = new Object();
@@ -109,7 +112,7 @@
 				e.allday = event.allDay;
 				e.url = event.url;
 				e.backgroundColor = event.color;
-				e.borderColor = event.borderColor;
+				e.border = event.color;
 				e.textColor = event.textColor;
 				socket.emit('move_event',e);
 
@@ -117,6 +120,7 @@
     		eventReceive: function (event) {
 
     			event.color = dropbgcolor;
+    			event.border = dropbordercolor;
 				$('#calendar').fullCalendar('rerenderEvents');
 				// create new obj the event to backend
 				var e = new Object();
@@ -128,7 +132,7 @@
 				e.allday = event.allDay;
 				e.url = event.url;
 				e.backgroundColor = event.color;
-				e.borderColor = event.borderColor;
+				e.border = event.color;
 				e.textColor = event.textColor;
 				socket.emit('add_event',e);
 
@@ -192,6 +196,7 @@
 	function createAndSend(e, a) {
 
 		event.color = dropbgcolor;
+		event.border = dropbordercolor;
 		$('#calendar').fullCalendar('rerenderEvents');
 		// create new obj the event to backend
 		var e = new Object();
@@ -203,7 +208,7 @@
 		e.allday = event.allDay;
 		e.url = event.url;
 		e.backgroundColor = event.color;
-		e.borderColor = event.borderColor;
+		e.border = event.color;
 		e.textColor = event.textColor;
 		socket.emit(a,e);
 

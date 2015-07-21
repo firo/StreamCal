@@ -8,7 +8,6 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var mongourl = 'mongodb://streamcal:streamcal@ds037571.mongolab.com:37571/streamcal';
 
-
 app.use('/js',express.static( __dirname + '/lib'));
 app.use('/style',express.static( __dirname + '/css'));
 
@@ -27,7 +26,7 @@ app.get('/:room', function(req, res){
 
 // Socket.io
 io.on('connection', function(socket){
-	
+
 	// generate room id, if not requested in URL
 	var room_id = (socket.request.headers.referer).split('/')[3];
 	if (room_id == '') {
@@ -42,7 +41,7 @@ io.on('connection', function(socket){
 			/* collection.find().toArray(function(err, items) {
 				console.log('here');
 				console.log(items);
-				for (i = 0; i < items.length; i++) { 
+				for (i = 0; i < items.length; i++) {
 				    console.log(items[i]);
 				}
 			});*/
@@ -87,13 +86,13 @@ io.on('connection', function(socket){
 });
 
 
-// Express 
-var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000  
+// Express
+var port = process.env.PORT || 5000; // Use the port that Heroku provides or default to 5000
 http.listen(port, function(){
   console.log("Express server listening on port %d in %s mode", port, app.settings.env);
 });
 
-
+// Utility methods
 function countClientsInRoom(array, room){
 	return Object.size(array[room]);
 }
@@ -106,6 +105,7 @@ Object.size = function(obj) {
     return size;
 };
 
+// Mongofb storage by event
 function storeEvent(action, room, event){
 
 	MongoClient.connect(mongourl, function(err, db) {
@@ -116,10 +116,9 @@ function storeEvent(action, room, event){
 		  } else if (action == 'remove') {
 		  	collection.remove({ _id : event._id }, 1);
 		  } else if (action =='move') {
-		  	collection.remove({ _id : event._id }, 1); 
+		  	collection.remove({ _id : event._id }, 1);
 		  	collection.save(event);
 		  }
 	  db.close();
 	});
 }
-

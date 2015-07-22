@@ -7,13 +7,12 @@
     "socket.io": "1.3.5",
     "express": "^4.11.0",
     "mongodb": "2.0.35",
-    "shortid": "2.2.2"
+    "shortid": "2.2.2",
+    "moment": "~2.10.3"
   },
   "engines": {
     "node": ">= 0.4.0"
   },
-  "main": "app.js",
-  
   "keywords": [
     "node",
     "calendar"

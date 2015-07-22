@@ -17,7 +17,7 @@
 
 	$(document).ready(function() {
 
-		// var room_id = document.URL.split('/')[3];		
+		// var room_id = document.URL.split('/')[3];
 		socket.on('room_request', function(id){
 			//$('#room h1').append($('<i>').text(room_id));
 			$('#room h1').replaceWith('<h1>Match Calendar <a href="/'+ id + '">'+id+'</h1>');
@@ -26,11 +26,42 @@
 
 		// listen new event and render in calendar
 		socket.on('add_event', function(e){
-			//$('#log').append($('<i>').text(e.title));
 			if(!containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
-				$('#calendar').fullCalendar( 'renderEvent', {id:e._id , title: e.title, start: e.start, backgroundColor: e.backgroundColor, borderColor: e.border}, true);
+				$('#calendar').fullCalendar( 'renderEvent', {
+						id:e._id,
+						title: e.title,
+						start: e.start,
+						backgroundColor: e.backgroundColor,
+						borderColor: e.border}
+					, true);
 			}
 		});
+
+		// listen for loading events on first load
+		socket.on('load_event', function(e){
+			if(!containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
+				$('#calendar').fullCalendar( 'renderEvent', {
+						id:e._id,
+						title: e.title,
+						start: e.start,
+						backgroundColor: e.backgroundColor,
+						borderColor: e.border}
+					, true);
+			}
+		});
+
+		// refactor add event avoid loop add event and store
+		function showEvent(e){
+			if(!containsEvent(e,$('#calendar').fullCalendar( 'clientEvents'))) {
+				$('#calendar').fullCalendar( 'renderEvent', {
+						id:e._id,
+						title: e.title,
+						start: e.start,
+						backgroundColor: e.backgroundColor,
+						borderColor: e.border}
+					, true);
+			}
+		}
 
 		// listen new event to remove from calendar
 		socket.on('remove_event', function(e){
@@ -159,7 +190,7 @@
 	        .appendTo( $( ".events" ) )
 	        .css( 'background-color', color )
 	        .css( 'border-color', "#FFFFFF");
-	        
+
 	        $('#external-events .fc-event').each(function() {
 			// store data so the calendar knows to render an event upon drop
 			$(this).data('event', {
@@ -177,12 +208,12 @@
 		});
 
 	    });
-		
+
 
 	});
 
 	/* utilities functions
-	-----------------------------------------------------------------*/	
+	-----------------------------------------------------------------*/
 	function containsEvent(obj, list) {
 	    var i;
 	    for (i = 0; i < list.length; i++) {
@@ -223,12 +254,12 @@
 		font-size: 14px;
 		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
 	}
-		
+
 	#wrap {
 		width: 1100px;
 		margin: 0 auto;
 	}
-		
+
 	#external-events {
 		float: left;
 		width: 150px;
@@ -237,24 +268,24 @@
 		background: #eee;
 		text-align: left;
 	}
-		
+
 	#external-events h4 {
 		font-size: 16px;
 		margin-top: 0;
 		padding-top: 1em;
 	}
-		
+
 	#external-events .fc-event {
 		margin: 10px 0;
 		cursor: pointer;
 	}
-		
+
 	#external-events p {
 		margin: 1.5em 0;
 		font-size: 11px;
 		color: #666;
 	}
-		
+
 	#external-events p input {
 		margin: 0;
 		vertical-align: middle;
@@ -282,7 +313,7 @@
 			<div class='events'>
 				<!--<div class='fc-event'>School</div>-->
 			</div>
-			
+
 			<p>
 				<input type='checkbox' id='drop-remove' />
 				<label for='drop-remove'>remove after drop</label>

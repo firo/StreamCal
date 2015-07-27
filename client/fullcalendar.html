@@ -124,16 +124,16 @@
 					$(this).remove();
 				}
 			},
-			eventClick: function(calEvent, jsEvent, view) {
-
-		    },
-		    eventDrop: function(event, delta, revertFunc) {
-			    /*alert(event.title + " was dropped on " + event.start.format());
-			    if (!confirm("Are you sure about this change?")) {
-			        revertFunc();
-			    }*/
-			    event.color = dropbgcolor;
-			    event.border = dropbordercolor;
+			eventClick: function(event, jsEvent, view) {
+				if (confirm("Are you sure you want delete this event?")) {
+					//alert(event.title + " was dropped on " + event.start.format());
+					$('#calendar').fullCalendar('removeEvents', event._id);
+				}
+			},
+			eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {
+				// like EventDrop
+				event.color = dropbgcolor;
+				event.border = dropbordercolor;
 				$('#calendar').fullCalendar('rerenderEvents');
 				// create new obj the event to backend
 				var e = new Object();
@@ -149,25 +149,47 @@
 				e.textColor = event.textColor;
 				socket.emit('move_event',e);
 
+			},
+	    eventDrop: function(event, delta, revertFunc) {
+			    /*alert(event.title + " was dropped on " + event.start.format());
+			    if (!confirm("Are you sure about this change?")) {
+			        revertFunc();
+			    }*/
+			    event.color = dropbgcolor;
+			    event.border = dropbordercolor;
+					$('#calendar').fullCalendar('rerenderEvents');
+					// create new obj the event to backend
+					var e = new Object();
+					e.room_id = room_id;
+					e._id = event._id;
+					e.start = event.start;
+					e.end = event.end;
+					e.title = event.title;
+					e.allday = event.allDay;
+					e.url = event.url;
+					e.backgroundColor = event.color;
+					e.border = event.color;
+					e.textColor = event.textColor;
+					socket.emit('move_event',e);
+
     		},
     		eventReceive: function (event) {
-
     			event.color = dropbgcolor;
     			event.border = dropbordercolor;
-				$('#calendar').fullCalendar('rerenderEvents');
-				// create new obj the event to backend
-				var e = new Object();
-				e.room_id = room_id;
-				e._id = event._id;
-				e.start = event.start;
-				e.end = event.end;
-				e.title = event.title;
-				e.allday = event.allDay;
-				e.url = event.url;
-				e.backgroundColor = event.color;
-				e.border = event.color;
-				e.textColor = event.textColor;
-				socket.emit('add_event',e);
+					$('#calendar').fullCalendar('rerenderEvents');
+					// create new obj the event to backend
+					var e = new Object();
+					e.room_id = room_id;
+					e._id = event._id;
+					e.start = event.start;
+					e.end = event.end;
+					e.title = event.title;
+					e.allday = event.allDay;
+					e.url = event.url;
+					e.backgroundColor = event.color;
+					e.border = event.color;
+					e.textColor = event.textColor;
+					socket.emit('add_event',e);
 
 			},
 			dayRightclick: function(date, jsEvent, view) {
@@ -184,7 +206,6 @@
 		});
 
 	    jQuery('.add').click(function () {
-
 	        //$("#create").submit();
 	        //alert('alert');
 	        var color = "#"+$("#eventcolor").val();
@@ -227,7 +248,6 @@
 	}
 
 	function createAndSend(e, a) {
-
 		event.color = dropbgcolor;
 		event.border = dropbordercolor;
 		$('#calendar').fullCalendar('rerenderEvents');
@@ -244,7 +264,6 @@
 		e.border = event.color;
 		e.textColor = event.textColor;
 		socket.emit(a,e);
-
 	}
 
 </script>
@@ -325,7 +344,7 @@
 		<div id='calendar'></div>
 		<div style='clear:both'></div>
 	</div>
-	<div id='log'></div>
+	<!--<div id='log'></div>-->
 
 </body>
 </html>

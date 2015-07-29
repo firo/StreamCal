@@ -121,17 +121,17 @@ function storeEvent(action, room, event){
         event.created_at = now; // add created at field
         event.updated_at = now; // add updated_at field
         collection.save(event);
-        console.log("stored event " + event._id + " on room " + room);
-
+        console.log("mongodb: stored event " + event._id + " on room " + room);
 
 		  } else if (action == 'remove') {
 		  	collection.remove({ _id : event._id }, 1);
+        console.log("mongodb: remove event " + event._id + " on room " + room);
 
 		  } else if (action =='move') {
 		  	collection.remove({ _id : event._id }, 1);
         event.updated_at = now; // add updated_at field - missing created_at
 		  	collection.save(event);
-        console.log("moved event " + event._id + " on room " + room);
+        console.log("mongodb: moved event " + event._id + " on room " + room);
 		  }
 	  db.close();
 	});

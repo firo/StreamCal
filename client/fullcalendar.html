@@ -127,7 +127,8 @@
 			eventClick: function(event, jsEvent, view) {
 				if (confirm("Are you sure you want delete this event?")) {
 					//alert(event.title + " was dropped on " + event.start.format());
-					$('#calendar').fullCalendar('remove_event', event._id);
+					$('#calendar').fullCalendar('removeEvents', event._id);
+					socket.emit('remove_event',e);
 				}
 			},
 			eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {

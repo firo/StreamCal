@@ -7,7 +7,8 @@ var shortid   =     require('shortid');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var moment = require('moment');
-var mongourl = 'mongodb://streamcal:streamcal@ds037571.mongolab.com:37571/streamcal';
+//var mongourl = 'mongodb://streamcal:streamcal@ds037571.mongolab.com:37571/streamcal';
+var mongourl = 'mongodb://localhost:27017/streamcal';
 var env = process.env.NODE_ENV || 'development';
 
 app.use('/js',express.static( __dirname + '/lib'));
@@ -71,8 +72,8 @@ io.on('connection', function(socket) {
 
 	socket.on('remove_event', function(e) {
 		console.log("remove event " + e._id + " on room " + room_id + " with background "+e.backgroundColor + " with bordercolor "+e.border);
-		io.sockets.in(room_id).emit('remove_event', e);
-		storeEvent('remove',room_id,e); // update mongodb
+		io.sockets.in(room_id).emit('remove_event', e); // remove event on all other active clients
+		storeEvent('remove',room_id,e); // remove event even in mongodb
 	});
 
 	socket.on('move_event', function(e) {

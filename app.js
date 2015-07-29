@@ -8,6 +8,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var moment = require('moment');
 var mongourl = 'mongodb://streamcal:streamcal@ds037571.mongolab.com:37571/streamcal';
+var env = process.env.NODE_ENV || 'development';
 
 app.use('/js',express.static( __dirname + '/lib'));
 app.use('/style',express.static( __dirname + '/css'));
@@ -110,6 +111,7 @@ Object.size = function(obj) {
 
 // Mongofb storage by event
 function storeEvent(action, room, event){
+  console.log("store event:" + event.title);
 	MongoClient.connect(mongourl, function(err, db) {
 	  assert.equal(null, err);
 	  	var collection = db.collection(room);
@@ -129,6 +131,7 @@ function storeEvent(action, room, event){
 		  	collection.remove({ _id : event._id }, 1);
         event.updated_at = now; // add updated_at field - missing created_at
 		  	collection.save(event);
+        console.log("moved event " + event._id + " on room " + room);
 		  }
 	  db.close();
 	});

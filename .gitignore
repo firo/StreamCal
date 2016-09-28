@@ -1,14 +1,22 @@
 # Logs
 logs
 *.log
+*.jpg
+
 test*
 _temp
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+# Runtime data
+pids
+*.pid
+*.seed
 
 # Dependency directory
-node_modules
+# https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
+node_modules/*
+
+# Environment config
+config*.json
 
 # Environment config
 private*

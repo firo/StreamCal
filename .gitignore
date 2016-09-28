@@ -1,0 +1,21 @@
+# Logs
+logs
+*.log
+*.jpg
+
+test*
+_temp
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependency directory
+node_modules/*
+
+# Environment config
+config*.json
+private.js
+mongo.js
+redis1.js

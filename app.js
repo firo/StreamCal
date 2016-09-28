@@ -7,8 +7,7 @@ var shortid   =     require('shortid');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var moment = require('moment');
-var mongourl = 'mongodb://streamcal:streamcal@ds037571.mongolab.com:37571/streamcal';
-//var mongourl = 'mongodb://localhost:27017/streamcal';
+var mongourl = process.env.MONGO_URL ;
 var env = process.env.NODE_ENV || 'development';
 
 app.use('/js',express.static( __dirname + '/lib'));

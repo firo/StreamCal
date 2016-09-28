@@ -15,7 +15,7 @@ pids
 node_modules/*
 
 # Environment config
-config*.json
-private.js
-mongo.js
-redis1.js
+config*
+private*
+mongo*
+redis*

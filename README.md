@@ -1,29 +1,12 @@
-# README #
+# Streaming Calendar #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Stream Cal objective is help multiple user to find out the best slot for planning same activity.
+You can create any slot activity using Name and Color and then drag-and-drop in the calendar.
+All the other users connected to the same calendar id, can see in real time all the changes appied to the calendar.
 
-### What is this repository for? ###
+### More details? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* StreamCal is developed using NodeJS and Socket.IO.
+* Each time you access to the site, new unique calendar url is generate for future changes
+* the persistance is based on MongoDB
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
